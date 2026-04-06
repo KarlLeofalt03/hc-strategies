@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: 'HC Strategies <onboarding@resend.dev>',
-        to: ['strategieshc@gmail.com'],
+        to: ['karlleofalt@gmail.com'],
         reply_to: email,
         subject: `[HC Strategies Support] ${subject || 'New message'} — from ${name}`,
         html: `
