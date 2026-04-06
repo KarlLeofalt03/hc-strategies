@@ -23,22 +23,42 @@ const SUBJECTS = [
 type FormState = { name: string; email: string; subject: string; message: string }
 
 export default function SupportPage() {
-  const [form, setForm] = useState<FormState>({ name: '', email: '', subject: '', message: '' })
-  const [sent, setSent] = useState(false)
+  const [form, setForm]       = useState<FormState>({ name: '', email: '', subject: '', message: '' })
+  const [sent, setSent]       = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError]     = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
+    setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // TODO: Replace with Resend / Formspree / EmailJS API call
-    // Example with Formspree: await fetch('https://formspree.io/f/YOUR_ID', { method:'POST', body: JSON.stringify(form) })
-    await new Promise(r => setTimeout(r, 1200))
+    setError('')
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Something went wrong. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      setSent(true)
+    } catch (err) {
+      setError('Failed to send message. Please check your connection and try again.')
+    }
+
     setLoading(false)
-    setSent(true)
   }
 
   return (
@@ -47,7 +67,7 @@ export default function SupportPage() {
         <p className="eyebrow">// Support</p>
         <h1 className="section-title">Get in Touch</h1>
         <p className="section-sub">
-          Every message goes directly to the HC Strategies team. No bots. No outsourced support.
+          Every message goes directly to Marcus at HC Strategies. No bots. No outsourced support.
         </p>
       </div>
 
@@ -60,16 +80,17 @@ export default function SupportPage() {
               <span className="status-dot" />
               <div>
                 <div className="support-page__form-title">Message HC Strategies</div>
-                <div className="support-page__form-sub">Replies within 24 hours · All messages read personally</div>
+                <div className="support-page__form-sub">Replies within 24 hours · Goes directly to Marcus</div>
               </div>
             </div>
 
             {sent ? (
               <div className="support-page__success">
                 <div className="support-page__success-icon">✓</div>
-                <div className="support-page__success-title">Message Sent</div>
+                <div className="support-page__success-title">Message Sent!</div>
                 <p className="support-page__success-text">
-                  We will reply to <strong>{form.email}</strong> within 24 hours.
+                  Your message has been sent to Marcus at <strong>strategieshc@gmail.com</strong>.<br />
+                  Expect a reply within 24 hours.
                 </p>
                 <button
                   onClick={() => { setSent(false); setForm({ name:'', email:'', subject:'', message:'' }) }}
@@ -110,11 +131,20 @@ export default function SupportPage() {
                     className="field__textarea" />
                 </div>
 
+                {/* Error message */}
+                {error && (
+                  <div className="support-page__error">{error}</div>
+                )}
+
                 <button type="submit" disabled={loading} className="btn btn--primary btn--full">
                   {loading ? (
-                    <span className="support-page__spinner" />
+                    <span className="support-page__spinner">Sending...</span>
                   ) : 'Send Message →'}
                 </button>
+
+                <p className="support-page__form-note">
+                  Your message is sent directly to strategieshc@gmail.com
+                </p>
               </form>
             )}
           </div>
@@ -136,7 +166,6 @@ export default function SupportPage() {
         {/* Right — FAQ */}
         <div>
           <div className="support-page__right-title font-display">Quick Answers</div>
-
           <div className="support-page__faqs">
             {FAQS.map((faq, i) => (
               <details key={i} className="accordion">
@@ -152,12 +181,12 @@ export default function SupportPage() {
           <div className="support-page__avail-card">
             <div className="support-page__avail-header">
               <span className="status-dot" />
-              <span>Mentor is available</span>
+              <span>Marcus is available</span>
             </div>
             <p className="support-page__avail-desc">
               Mon–Fri, London time. Typically online pre-market (7–9am GMT) and post-NY session (10pm–midnight GMT).
             </p>
-            <div className="support-page__avail-tz font-mono">Current time zone: GMT / London</div>
+            <div className="support-page__avail-tz font-mono">strategieshc@gmail.com</div>
           </div>
         </div>
 

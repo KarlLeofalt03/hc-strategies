@@ -2045,3 +2045,20 @@ details[open] .accordion__icon {
   min-width: 80px !important;
   width: auto !important;
 }
+
+/* Support form error + note */
+.support-page__error {
+  background: var(--red-dim);
+  border: 1px solid rgba(255,77,109,0.25);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--red);
+}
+
+.support-page__form-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-500);
+  font-family: var(--font-mono);
+}
